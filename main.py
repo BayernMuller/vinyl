@@ -10,6 +10,7 @@ remove_streamlit_style()
 record_list = eval(open('list.json', 'r').read())
 
 st.title('')
+st.markdown('**My record collection**')
 summary = st.empty()
 
 group_by = {
@@ -53,3 +54,5 @@ for group, records in table.items():
         count[record_obj.format] += 1
 
     record_widget.generate()
+
+summary.markdown(f'Totally {"".join([f"{count[format]} {format}s, " for format in count])[:-2]}')
