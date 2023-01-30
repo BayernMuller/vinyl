@@ -380,13 +380,15 @@
         "artist": "Jon & Vangelis",
         "title": "The friends of Mr. Cairo",
         "year": 1981,
-        "genre": "Pop"
+        "genre": "Pop",
+        "format": "LP"
     },
     {
         "cover":"https://is3-ssl.mzstatic.com/image/thumb/Music114/v4/eb/4a/f9/eb4af984-fc68-56ab-7b89-1d070c04e1dd/5099765318524.jpg/316x316bb.webp",
         "artist": "WHAM!",
         "title": "Last Christmas",
         "year": 1984,
-        "genre": "Pop"
+        "genre": "Pop",
+        "format": "LP"
     }
 ]
