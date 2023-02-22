@@ -1,11 +1,12 @@
 from utils.components import Record, RecordData
-from utils.streamlit_util import remove_streamlit_style
+from utils.streamlit_util import remove_streamlit_style, set_page_wide
 import streamlit as st
 
 def sort_func(x, tag_list):
     return ''.join([str(x.get(tag)) for tag in tag_list])
 
 #remove_streamlit_style()
+set_page_wide()
 
 record_list = eval(open('list.json', 'r').read())
 

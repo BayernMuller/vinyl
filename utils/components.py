@@ -40,11 +40,11 @@ class Record:
     <div class="vynil-info">
         <b>{vynil.title}</b>
         <div style="color: gray; font-size: 12px;">
-            <a>{vynil.artist}</a>
+            <text>{vynil.artist}</text>
             <span>•</span>
-            <a>{vynil.year}</a>
+            <text>{vynil.year}</text>
             <span>•</span>
-            <a>{vynil.format}</a>
+            <text>{vynil.format}</text>
         </div>
     </div>
 </div>
