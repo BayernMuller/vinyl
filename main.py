@@ -22,8 +22,10 @@ group_by = {
     'none': {'sort_by': ['artist', 'year'], },
 }
 
+index_format = list(group_by.keys()).index('format')
+
 with st.expander('options'):
-    group_name = st.selectbox('group by', list(group_by.keys()))
+    group_name = st.selectbox('group by', list(group_by.keys()), index=index_format)
 
 group_info = group_by[group_name]
 sort_by = group_info.get('sort_by')
