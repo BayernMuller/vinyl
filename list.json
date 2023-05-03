@@ -4,7 +4,7 @@
         "artist": "Yes",
         "title": "90125",
         "year": 1983,
-        "genre": "Rock",
+        "genre": "Progressive Rock",
         "format": "LP"
     },
     {
@@ -12,7 +12,7 @@
         "artist": "Yes",
         "title": "Close to the Edge",
         "year": 1972,
-        "genre": "Rock",
+        "genre": "Progressive Rock",
         "format": "LP"
     },
     {
@@ -20,7 +20,7 @@
         "artist": "Yes",
         "title": "Fragile",
         "year": 1971,
-        "genre": "Rock",
+        "genre": "Progressive Rock",
         "format": "LP"
     },
     {
@@ -32,11 +32,27 @@
         "format": "LP"
     },
     {
+        "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/3c/1b/a9/3c1ba9e1-15b1-03b3-3bfd-09dbd9f1705b/dj.mggvbaou.jpg/592x592bb.webp",
+        "artist": "Pink Floyd",
+        "title": "The Dark Side of the Moon",
+        "year": 1973,
+        "genre": "Rock",
+        "format": "LP"
+    },
+    {
+        "cover": "https://is3-ssl.mzstatic.com/image/thumb/Music123/v4/ea/42/e0/ea42e096-991f-eff5-ae81-b67bd9fdd1c4/22UM1IM13152.rgb.jpg/592x592bb.webp",
+        "artist": "Lil Yachty",
+        "title": "Let's Start Here.",
+        "year": 2023,
+        "genre": "Psychedelic Rock",
+        "format": "LP"
+    },
+    {
         "cover": "https://is3-ssl.mzstatic.com/image/thumb/Music5/v4/2f/c7/19/2fc71988-6871-be2c-6731-a3d0f2a6b232/Court_2500px.jpg/592x592bb.webp",
         "artist": "King Crimson",
         "title": "In the Court of the Crimson King",
         "year": 1969,
-        "genre": "Rock",
+        "genre": "Progressive Rock",
         "format": "LP"
     },
     {
@@ -156,6 +172,22 @@
         "artist": "Black Sabbath",
         "title": "Black Sabbath",
         "year": 1970,
+        "genre": "Metal",
+        "format": "LP"
+    },
+    {
+        "cover": "https://is4-ssl.mzstatic.com/image/thumb/Music125/v4/be/27/91/be279120-2285-16c6-c7ba-9d6643d4a948/075992732727.jpg/632x632bb.webp",
+        "artist": "Black Sabbath",
+        "title": "Paranoid",
+        "year": 1970,
+        "genre": "Metal",
+        "format": "LP"
+    },
+    {
+        "cover": "https://is4-ssl.mzstatic.com/image/thumb/Video112/v4/b3/cb/c8/b3cbc854-472a-1d90-0634-f09226a5a3de/Job72d3b660-3096-4ee9-8c6f-7f31016e05ea-139968207-PreviewImage_preview_image_nonvideo_sdr-Time1669923118740.png/592x592bb.webp",
+        "artist": "Black Sabbath",
+        "title": "Master of Reality",
+        "year": 1971,
         "genre": "Metal",
         "format": "LP"
     },
