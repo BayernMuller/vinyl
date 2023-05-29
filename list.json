@@ -422,5 +422,21 @@
         "year": 1984,
         "genre": "Pop",
         "format": "LP"
+    },
+    {
+        "cover": "https://is5-ssl.mzstatic.com/image/thumb/Video116/v4/82/0f/b5/820fb539-b32d-21c7-aba7-433dea4f6140/Job80ab9750-a570-4004-a437-faecb3e63a6c-149557761-PreviewImage_preview_image_nonvideo_sdr-Time1683128866540.png/316x316bf.webp",
+        "artist": "Scorpions",
+        "title": "Lovedrive",
+        "year": 1979,
+        "genre": "Rock",
+        "format": "LP"
+    },
+    {
+        "cover": "https://i.discogs.com/KJQV4F2uESmNQIzyFZ-1IlRrRuKMVWwV8_psMhfn2YM/rs:fit/g:sm/q:90/h:594/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTkyOTU4/MjYtMTQ3ODc3MTEy/My02NzU4LmpwZWc.jpeg",
+        "artist": "Steelheart",
+        "title": "Steelheart",
+        "year": 1990,
+        "genre": "Rock",
+        "format": "LP"
     }
 ]
