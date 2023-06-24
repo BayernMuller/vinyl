@@ -138,7 +138,15 @@
     {
         "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/fb/a5/9a/fba59a9c-d064-eaf7-0704-1346caa75b93/8806163395876.jpg/592x592bb.webp",
         "artist": "유재하",
-        "title": "사랑하기 때문에",
+        "title": "사랑하기 때문에 (1987)",
+        "year": 1987,
+        "genre": "Korean Pop",
+        "format": "LP"
+    },
+    {
+        "cover": "https://upload.wikimedia.org/wikipedia/ko/thumb/9/9f/사랑하기_때문에_%281987년%29.jpg/220px-사랑하기_때문에_%281987년%29.jpg",
+        "artist": "유재하",
+        "title": "사랑하기 때문에 (2023)",
         "year": 1987,
         "genre": "Korean Pop",
         "format": "LP"
