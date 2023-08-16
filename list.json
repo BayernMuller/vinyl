@@ -502,5 +502,13 @@
         "year": 1990,
         "genre": "Rock",
         "format": "LP"
+    },
+    {
+        "cover": "https://e.snmc.io/i/600/s/45efebde403e5dd5cbbfb439c4168de6/9800430/250-뽕-Cover-Art.jpg",
+        "artist": "250",
+        "title": "뽕",
+        "year": 2021,
+        "genre": "Dance",
+        "format": "LP"
     }
 ]
