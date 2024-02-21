@@ -1,5 +1,5 @@
 from utils.components import RecordGroup
-from utils.streamlit_util import remove_streamlit_style, set_page_wide
+from utils.streamlit_util import remove_streamlit_style
 from models.record import Record
 import streamlit as st
 
@@ -7,18 +7,44 @@ RECORDS_LIST_FILE = 'list.json'
 
 class App:
     def __init__(self):
-        list_file = open(RECORDS_LIST_FILE, 'r')
-        record_list = eval(list_file.read())
-        self.data: list[Record] = [Record(**record) for record in record_list]
+        self.data = None
+        try:
+            list_file = open(RECORDS_LIST_FILE, 'r')
+            record_list = eval(list_file.read())
+            self.data: list[Record] = [Record(**record) for record in record_list]
+            list_file.close()
+        except FileNotFoundError:
+            st.error(f'File "{RECORDS_LIST_FILE}" not found')
+            st.write('')
+            st.write("Did you fork this template just now? If so, you need to upload your list file first.")
+            st.code('''
+            # Path: list.json
+            [
+                {
+                    "cover": "<image_url>",
+                    "artist": "<artist_name>",
+                    "title": "<album_title>",
+                    "genre": "<genre>",
+                    "format": "<format>",
+                    "country": "<country>",
+                    "year": <year>
+                },
+                ...
+            ]
+            ''')
+        except Exception:
+            st.error(f'Wrong JSON format in "{RECORDS_LIST_FILE}". Please check the file and try again.')
+        finally:
+            if not isinstance(self.data, list):
+                st.write("For more information, please check the [documentation](https://github.com/BayernMuller/vinyl/blob/main/README.md).")
+                st.stop()
+                
 
     @staticmethod
     def sort_func(x: Record, tag_list):
         return ''.join([str(getattr(x, tag, '')) for tag in tag_list])
     
     def run(self):
-        set_page_wide()
-        remove_streamlit_style()
-    
         st.title('Records')
         summary = st.empty()
 
@@ -90,5 +116,7 @@ class App:
             summary.markdown(f'Totally {"".join([f"{count[format]} {format}s, " for format in count])[:-2]}')
 
 if __name__ == '__main__':
+    st.set_page_config(page_title='Records', page_icon=':cd:', layout='wide')
+    remove_streamlit_style()
     app = App()
     app.run()
