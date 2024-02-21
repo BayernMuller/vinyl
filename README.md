@@ -1,3 +1,13 @@
-running at:
+<span align="center">
+    <img src="docs/preview.png"/>
+</span>
 
-https://records.streamlit.app
+<span align="center">
+
+# vinyl
+
+</span>
+
+### What is vinyl?
+
+* vinyl is a streamlit template for managing your records collection.
