@@ -18,6 +18,7 @@ group_by = {
     'genre': {'sort_by': ['artist', 'year'], },
     'format': {'sort_by': ['artist', 'year'], },
     'year': {'sort_by': ['artist', 'title'], },
+    'country': {'sort_by': ['artist', 'year'], },
     'none': {'sort_by': ['artist', 'year'], },
 }
 
@@ -44,7 +45,7 @@ for record in record_list:
     if search and search.lower() not in str(record).lower():
         continue
 
-    group = record.get(group_name)
+    group = record.get(group_name, 'N/A')
     if group not in table:
         table[group] = []
     table[group].append(record)

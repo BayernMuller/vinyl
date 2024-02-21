@@ -9,6 +9,7 @@ class RecordData:
     year: int
     genre: str
     format: str
+    country: str
 
     def __init__(self, source: dict=dict()):
         self.cover = source.get('cover')
@@ -17,6 +18,9 @@ class RecordData:
         self.year = source.get('year')
         self.genre = source.get('genre')
         self.format = source.get('format')
+        self.country = source.get('country')
+        if self.country is None:
+            self.country = 'N/A'
 
     def __str__(self):
         return f'{self.artist} {self.title} {self.year} {self.genre} {self.format}'
