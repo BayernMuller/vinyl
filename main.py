@@ -8,7 +8,18 @@ def sort_func(x, tag_list):
 set_page_wide()
 remove_streamlit_style()
 
-record_list = eval(open('list.json', 'r').read())
+try:
+    list_file = open('list.json', 'r')
+except FileNotFoundError:
+    st.success("Welcome to your new record list! Add your records to a file named 'list.json' and run the app again.")
+    st.balloons()
+    st.stop()
+
+try:
+    record_list = eval(list_file.read())
+except Exception as e:
+    st.error(f'Error reading list.json. Please check the JSON format and try again.')
+    st.stop()
 
 st.title('Records')
 summary = st.empty()
