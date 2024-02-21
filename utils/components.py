@@ -18,12 +18,20 @@ class RecordData:
         self.genre = source.get('genre')
         self.format = source.get('format')
 
+    def __str__(self):
+        return f'{self.artist} {self.title} {self.year} {self.genre} {self.format}'
+
 class Record:
     def __init__(self):
         self.__html = '<div>'
+        self.__length = 0
 
     def add_record(self, vynil: RecordData):
         self.__html += self.__create_vynil(vynil)
+        self.__length += 1
+
+    def __len__(self):
+        return self.__length
 
     def generate(self, placeholder=None):
         self.__html += '</div>'
