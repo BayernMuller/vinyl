@@ -12,13 +12,13 @@ class App:
         self.data: list[Record] = [Record(**record) for record in record_list]
 
     @staticmethod
-    def sort_func(x, tag_list):
-        return ''.join([str(x.get(tag)) for tag in tag_list])
+    def sort_func(x: Record, tag_list):
+        return ''.join([str(x.model_dump().get(tag)) for tag in tag_list])
     
     def run(self):
-        remove_streamlit_style()
         set_page_wide()
-
+        remove_streamlit_style()
+    
         st.title('Records')
         summary = st.empty()
 
@@ -52,7 +52,7 @@ class App:
             if search and search.lower() not in str(record).lower():
                 continue
 
-            group = record.get(group_name, 'N/A')
+            group = record.model_dump().get(group_name, 'unknown')
             if group not in table:
                 table[group] = []
             table[group].append(record)
