@@ -13,7 +13,7 @@ class App:
 
     @staticmethod
     def sort_func(x: Record, tag_list):
-        return ''.join([str(x.model_dump().get(tag)) for tag in tag_list])
+        return ''.join([str(getattr(x, tag, '')) for tag in tag_list])
     
     def run(self):
         set_page_wide()
@@ -52,7 +52,7 @@ class App:
             if search and search.lower() not in str(record).lower():
                 continue
 
-            group = record.model_dump().get(group_name, 'unknown')
+            group = getattr(record, group_name, 'unknown')
             if group not in table:
                 table[group] = []
             table[group].append(record)
