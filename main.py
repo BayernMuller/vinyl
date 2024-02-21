@@ -34,7 +34,7 @@ class App:
         index_format = list(group_by.keys()).index('format')
 
         with st.sidebar:
-            with st.expander('search', expanded=True):
+            with st.expander('filter', expanded=True):
                 search = st.text_input('search', key='search')
 
             with st.expander('options', expanded=True):
