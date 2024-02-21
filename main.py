@@ -39,7 +39,7 @@ class App:
 
             with st.expander('options', expanded=True):
                 group_name = st.radio('group by', list(group_by.keys()), index=index_format, key='group_by')
-                group_order = st.radio('order', ['ascending', 'descending'], index=0, key='order', horizontal=True)
+                group_order = st.radio('order', ['ascending', 'descending'], index=0, key='order', horizontal=True, disabled=group_name == 'none')
             
             st.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
             st.write("Fork this template from [here](https://github.com/BayernMuller/vinyl/fork) and make your own list!")
