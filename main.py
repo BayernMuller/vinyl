@@ -31,7 +31,7 @@ class App:
                 },
                 ...
             ]
-            ''')
+            ''', language='json')
         except Exception:
             st.error(f'Wrong JSON format in "{RECORDS_LIST_FILE}". Please check the file and try again.')
         finally:
