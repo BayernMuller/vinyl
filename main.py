@@ -38,6 +38,9 @@ class App:
             if not isinstance(self.data, list):
                 st.write("For more information, please check the [documentation](https://github.com/BayernMuller/vinyl/blob/main/README.md).")
                 st.stop()
+
+        self.filter = st.sidebar.expander('filter', expanded=True)
+        self.options = st.sidebar.expander('options', expanded=True)
                 
 
     @staticmethod
@@ -58,18 +61,8 @@ class App:
         }
 
         index_format = list(group_by.keys()).index('format')
-
-        with st.sidebar:
-            with st.expander('filter', expanded=True):
-                search = st.text_input('search', key='search')
-
-            with st.expander('options', expanded=True):
-                group_name = st.radio('group by', list(group_by.keys()), index=index_format, key='group_by')
-                group_order = st.radio('order', ['ascending', 'descending'], index=0, key='order', horizontal=True, disabled=group_name == 'none')
-            
-            st.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
-            st.write("Fork this template from [here](https://github.com/BayernMuller/vinyl/fork) and make your own list!")
-
+        search = self.filter.text_input('search', key='search')
+        group_name = self.options.radio('group by', list(group_by.keys()), index=index_format, key='group_by')
         group_info = group_by[group_name]
         sort_by = group_info.get('sort_by')
 
@@ -83,7 +76,9 @@ class App:
                 table[group] = []
             table[group].append(record)
             table[group] = sorted(table[group], key=lambda x: App.sort_func(x, sort_by))
-            
+
+        disable_order = group_name == 'none' or len(table) == 1
+        group_order = self.options.radio('order', ['ascending', 'descending'], index=0, key='order', horizontal=True, disabled=disable_order)
         table = dict(sorted(table.items(), key=lambda x: x[0], reverse=group_order == 'descending'))
 
         if len(table) == 0:
@@ -114,6 +109,9 @@ class App:
             summary.markdown(f'Found {sum([len(records) for records in table.values()])} records for "{search}"')
         else:
             summary.markdown(f'Totally {"".join([f"{count[format]} {format}s, " for format in count])[:-2]}')
+
+        st.sidebar.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
+        st.sidebar.write("Fork this template from [here](https://github.com/BayernMuller/vinyl/fork) and make your own list!")
 
 if __name__ == '__main__':
     st.set_page_config(page_title='Records', page_icon=':cd:', layout='wide')
