@@ -10,6 +10,9 @@ class App:
         self.data = None
         try:
             list_file = open(RECORDS_LIST_FILE, 'r')
+            true = True
+            false = False
+            null = None
             record_list = eval(list_file.read())
             self.data: list[Record] = [Record(**record) for record in record_list]
             list_file.close()
