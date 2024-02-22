@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from models.record import Record
 import streamlit as st
+import base64
 
 class RecordGroup:
     def __init__(self):
@@ -22,6 +23,15 @@ class RecordGroup:
         self.__html = '<div>'
 
     def __create_record(self, record: Record) -> str:
+        # if the cover is a local file, convert it to base64
+        if record.cover and not record.cover.startswith('http') and record.cover.endswith('.png'):
+            try:
+                with open(record.cover, 'rb') as f:
+                    record.cover = f"data:image/png;base64,{base64.b64encode(f.read()).decode()}"
+            except FileNotFoundError:
+                # if the file is not found, set to default
+                record.cover = ''
+
         html = f"""
 <div style="display: inline-block; width: 150px; height: 260; margin: 0px 10px 10px 0px; vertical-align: top;">
     <img width="150" height="150" src="{record.cover}" style="border-radius: 7px;"/>
