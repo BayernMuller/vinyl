@@ -1,5 +1,6 @@
 from utils.components import RecordGroup
 from utils.streamlit_util import remove_streamlit_style
+from utils.collection_util import group_and_count, group_and_sum
 from models.record import Record
 import streamlit as st
 
@@ -49,7 +50,18 @@ class App:
     @staticmethod
     def sort_func(x: Record, tag_list):
         return ''.join([str(getattr(x, tag, '')) for tag in tag_list])
-    
+
+
+    def generate_summary_string(self):
+        total_count_by_format = group_and_count([record.format for record in self.data])
+        total_price_by_currency = group_and_sum([record.purchase_price for record in self.data if record.purchase_price is not None])
+
+        total_count_by_format_as_string = "".join([f"{count} {format}s, " for format, count in total_count_by_format.items()])[:-2]
+        total_price_by_currency_as_string = "".join([f"{currency} {price}, " for currency, price in total_price_by_currency.items()])[:-2]
+
+        return f'Totally {total_count_by_format_as_string}' + (f' and {total_price_by_currency_as_string}' if total_price_by_currency_as_string else '')
+
+
     def run(self):
         st.title('Records')
         summary = st.empty()
@@ -114,9 +126,10 @@ class App:
             record_widget.generate()
 
         if search:
-            summary.markdown(f'Found {sum([len(records) for records in table.values()])} records for "{search}"')
+            summary_string = f'Found {sum([len(records) for records in table.values()])} records for "{search}"'
         else:
-            summary.markdown(f'Totally {"".join([f"{count[format]} {format}s, " for format in count])[:-2]}')
+            summary_string = self.generate_summary_string()
+        summary.markdown(summary_string)
 
         st.sidebar.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
         st.sidebar.write("Fork this template from [here](https://github.com/BayernMuller/vinyl/fork) and make your own list!")
