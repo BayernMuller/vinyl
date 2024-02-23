@@ -68,9 +68,10 @@ class RecordGroup:
                 record.purchase_date if record.purchase_date else None,
             ] if value
         ]
+        others_str = "\n<span>•</span>\n".join(others)
         others_html = f"""<div style="color: gray; font-size: 12px;">
             <text>🛒 </text>
-            {"<span>•</span>".join(others)}
+            {others_str}
         </div>""" if others else '<div></div>'
 
         return f"{price_html}{others_html}"
