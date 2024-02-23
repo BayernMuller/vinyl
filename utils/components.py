@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from models.record import Record
+from utils.locale_util import format_currency 
 from typing import Optional
 import streamlit as st
 import base64
@@ -57,7 +58,7 @@ class RecordGroup:
             return '<div></div>'
 
         price_html = f"""<div style="color: gray; font-size: 12px;">
-            <text>💵 {f'{record.purchase_price[0]} {record.purchase_price[1]}'}</text>
+            <text>💵 {f'{format_currency(record.purchase_price[1], record.purchase_price[0])}'}</text>
         </div>""" if record.purchase_price else '<div></div>'
 
 

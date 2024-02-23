@@ -1,6 +1,7 @@
 from utils.components import RecordGroup
 from utils.streamlit_util import remove_streamlit_style
 from utils.collection_util import group_and_count, group_and_sum
+from utils.locale_util import format_currency 
 from models.record import Record
 from typing import Optional
 import streamlit as st
@@ -59,7 +60,7 @@ class App:
 
         if group_name == 'purchase_date':
             total_price_by_currency = group_and_sum([record.purchase_price for record in self.data if record.purchase_price is not None])
-            total_price_by_currency_as_string = "".join([f"{currency} {price}, " for currency, price in total_price_by_currency.items()])[:-2]
+            total_price_by_currency_as_string = "".join([f"{format_currency(price, currency)}, " for currency, price in total_price_by_currency.items()])[:-2]
         else:
             total_price_by_currency_as_string = ''
 
