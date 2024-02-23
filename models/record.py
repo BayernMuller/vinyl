@@ -42,6 +42,12 @@ class Record(BaseModel):
             return None
 
         return (currency, price) if price and currency else None
+    
+    @property
+    def purchase_store(self) -> Optional[str]:
+        if self.purchase:
+            return self.purchase.get('store')
+        return None
 
     def __str__(self):
         return f'{self.artist} {self.title} {self.year} {self.format}'
