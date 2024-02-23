@@ -2,6 +2,7 @@ from utils.components import RecordGroup
 from utils.streamlit_util import remove_streamlit_style
 from utils.collection_util import group_and_count, group_and_sum
 from models.record import Record
+from typing import Optional
 import streamlit as st
 
 RECORDS_LIST_FILE = 'list.json'
@@ -52,12 +53,15 @@ class App:
         return ''.join([str(getattr(x, tag, '')) for tag in tag_list])
 
 
-    def generate_summary_string(self):
+    def generate_summary_string(self, group_name: Optional[str] = None):
         total_count_by_format = group_and_count([record.format for record in self.data])
-        total_price_by_currency = group_and_sum([record.purchase_price for record in self.data if record.purchase_price is not None])
-
         total_count_by_format_as_string = "".join([f"{count} {format}s, " for format, count in total_count_by_format.items()])[:-2]
-        total_price_by_currency_as_string = "".join([f"{currency} {price}, " for currency, price in total_price_by_currency.items()])[:-2]
+
+        if group_name == 'purchase_date':
+            total_price_by_currency = group_and_sum([record.purchase_price for record in self.data if record.purchase_price is not None])
+            total_price_by_currency_as_string = "".join([f"{currency} {price}, " for currency, price in total_price_by_currency.items()])[:-2]
+        else:
+            total_price_by_currency_as_string = ''
 
         return f'Totally {total_count_by_format_as_string}' + (f' and {total_price_by_currency_as_string}' if total_price_by_currency_as_string else '')
 
@@ -128,7 +132,7 @@ class App:
         if search:
             summary_string = f'Found {sum([len(records) for records in table.values()])} records for "{search}"'
         else:
-            summary_string = self.generate_summary_string()
+            summary_string = self.generate_summary_string(group_name=group_name)
         summary.markdown(summary_string)
 
         st.sidebar.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
