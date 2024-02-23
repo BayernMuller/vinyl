@@ -34,9 +34,9 @@ class Record(BaseModel):
         return (currency, price) if price and currency else None
     
     @property
-    def purchase_store(self) -> Optional[str]:
+    def purchase_location(self) -> Optional[str]:
         if self.purchase:
-            return self.purchase.store
+            return self.purchase.location
         return None
 
     def __str__(self):

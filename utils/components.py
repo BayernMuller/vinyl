@@ -64,7 +64,7 @@ class RecordGroup:
 
         others = [
             f'<text>{value}</text>' for value in [
-                f'{record.purchase_store}' if record.purchase_store else None,
+                f'{record.purchase_location}' if record.purchase_location else None,
                 f'{record.purchase_date}' if record.purchase_date else None,
             ] if value
         ]

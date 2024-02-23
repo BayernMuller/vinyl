@@ -5,7 +5,7 @@ class PurchaseInfo(BaseModel):
     date: Optional[str] = None
     currency: Optional[str] = None
     price: Optional[float] = None
-    store: Optional[str] = None
+    location: Optional[str] = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -15,4 +15,4 @@ class PurchaseInfo(BaseModel):
             self.currency = 'USD'
 
     def __str__(self):
-        return f'{self.date} {self.price} {self.currency} {self.store}'
+        return f'{self.date} {self.price} {self.currency} {self.location}'
