@@ -58,14 +58,14 @@ class RecordGroup:
             return '<div></div>'
 
         price_html = f"""<div style="color: gray; font-size: 12px;">
-            <text>💵 {f'{format_currency(record.purchase_price[1], record.purchase_price[0])}'}</text>
+            <text>💵 {format_currency(record.purchase_price[1], record.purchase_price[0])}</text>
         </div>""" if record.purchase_price else '<div></div>'
 
 
         others = [
             f'<text>{value}</text>' for value in [
-                f'{record.purchase_location}' if record.purchase_location else None,
-                f'{record.purchase_date}' if record.purchase_date else None,
+                record.purchase_location if record.purchase_location else None,
+                record.purchase_date if record.purchase_date else None,
             ] if value
         ]
         others_html = f"""<div style="color: gray; font-size: 12px;">
