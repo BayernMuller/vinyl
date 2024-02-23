@@ -1,6 +1,9 @@
 from utils.components import RecordGroup
 from utils.streamlit_util import remove_streamlit_style
+from utils.collection_util import group_and_count, group_and_sum
+from utils.locale_util import format_currency 
 from models.record import Record
+from typing import Optional
 import streamlit as st
 
 RECORDS_LIST_FILE = 'list.json'
@@ -49,7 +52,21 @@ class App:
     @staticmethod
     def sort_func(x: Record, tag_list):
         return ''.join([str(getattr(x, tag, '')) for tag in tag_list])
-    
+
+
+    def generate_summary_string(self, group_name: Optional[str] = None):
+        total_count_by_format = group_and_count([record.format for record in self.data])
+        total_count_by_format_as_string = "".join([f"{count} {format}s, " for format, count in total_count_by_format.items()])[:-2]
+
+        if group_name == 'purchase_date':
+            total_price_by_currency = group_and_sum([record.purchase_price for record in self.data if record.purchase_price is not None])
+            total_price_by_currency_as_string = "".join([f"{format_currency(price, currency)}, " for currency, price in total_price_by_currency.items()])[:-2]
+        else:
+            total_price_by_currency_as_string = ''
+
+        return f'Totally {total_count_by_format_as_string}' + (f' and {total_price_by_currency_as_string}' if total_price_by_currency_as_string else '')
+
+
     def run(self):
         st.title('Records')
         summary = st.empty()
@@ -60,6 +77,7 @@ class App:
             'format': {'sort_by': ['artist', 'year'], },
             'year': {'sort_by': ['artist', 'title'], },
             'country': {'sort_by': ['artist', 'year'], },
+            'purchase_date': {'sort_by': ['purchase_date', 'artist', 'year'], },
             'none': {'sort_by': ['artist', 'year'], },
         }
 
@@ -75,6 +93,11 @@ class App:
                 continue
 
             group = getattr(record, group_name, 'unknown')
+
+            # get the year from purchase_date
+            if group_name == 'purchase_date':
+                group = group[:4] if group else 'N/A'
+
             if group not in table:
                 table[group] = []
             table[group].append(record)
@@ -91,14 +114,13 @@ class App:
                 st.info('No records found')
             st.stop()
 
-
         count = {}
         for group, records in table.items():
             st.write('---')
             if group_name != 'none':
                 st.subheader(group)
 
-            record_widget = RecordGroup()
+            record_widget = RecordGroup(group_name)
             for record in records:
                 record_widget.add_record(record)
                 if record.format not in count:
@@ -109,9 +131,10 @@ class App:
             record_widget.generate()
 
         if search:
-            summary.markdown(f'Found {sum([len(records) for records in table.values()])} records for "{search}"')
+            summary_string = f'Found {sum([len(records) for records in table.values()])} records for "{search}"'
         else:
-            summary.markdown(f'Totally {"".join([f"{count[format]} {format}s, " for format in count])[:-2]}')
+            summary_string = self.generate_summary_string(group_name=group_name)
+        summary.markdown(summary_string)
 
         st.sidebar.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
         st.sidebar.write("Fork this template from [here](https://github.com/BayernMuller/vinyl/fork) and make your own list!")
