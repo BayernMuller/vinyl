@@ -1,12 +1,14 @@
 from dataclasses import dataclass
 from models.record import Record
+from typing import Optional
 import streamlit as st
 import base64
 
 class RecordGroup:
-    def __init__(self):
+    def __init__(self, group_name: Optional[str] = None):
         self.__html = '<div>'
         self.__length = 0
+        self.__group_name = group_name
 
     def add_record(self, record: Record):
         self.__html += self.__create_record(record)
@@ -44,6 +46,9 @@ class RecordGroup:
             <span>•</span>
             <text>{record.format}</text>
         </div>
+        {f'''<div style="color: gray; font-size: 12px;">
+            <text>{record.purchase_date}</text>
+        </div>''' if record.purchase_date and self.__group_name == 'purchase_date' else '<div></div>'}
     </div>
 </div>
     """

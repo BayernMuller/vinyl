@@ -12,6 +12,13 @@ class Record(BaseModel):
 
     # optional
     country: Optional[str] = 'N/A'
+    purchase: Optional[dict]
+
+    @property
+    def purchase_date(self) -> Optional[str]:
+        if self.purchase:
+            return self.purchase.get('date')
+        return None
 
     def __str__(self):
         return f'{self.artist} {self.title} {self.year} {self.format}'

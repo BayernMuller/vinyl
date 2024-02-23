@@ -60,6 +60,7 @@ class App:
             'format': {'sort_by': ['artist', 'year'], },
             'year': {'sort_by': ['artist', 'title'], },
             'country': {'sort_by': ['artist', 'year'], },
+            'purchase_date': {'sort_by': ['purchase_date', 'artist', 'year'], },
             'none': {'sort_by': ['artist', 'year'], },
         }
 
@@ -75,6 +76,11 @@ class App:
                 continue
 
             group = getattr(record, group_name, 'unknown')
+
+            # get the year from purchase_date
+            if group_name == 'purchase_date':
+                group = group[:4] if group else 'N/A'
+
             if group not in table:
                 table[group] = []
             table[group].append(record)
@@ -91,14 +97,13 @@ class App:
                 st.info('No records found')
             st.stop()
 
-
         count = {}
         for group, records in table.items():
             st.write('---')
             if group_name != 'none':
                 st.subheader(group)
 
-            record_widget = RecordGroup()
+            record_widget = RecordGroup(group_name)
             for record in records:
                 record_widget.add_record(record)
                 if record.format not in count:
