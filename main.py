@@ -1,7 +1,7 @@
 from utils.components import RecordGroup
 from utils.streamlit_util import remove_streamlit_style
 from utils.collection_util import group_and_count, group_and_sum
-from utils.locale_util import format_currency 
+from babel.numbers import format_currency
 from models.record import Record
 from typing import Optional
 import streamlit as st

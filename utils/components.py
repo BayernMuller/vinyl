@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from models.record import Record
-from utils.locale_util import format_currency 
+from babel.numbers import format_currency
 from typing import Optional
 import streamlit as st
 import base64
