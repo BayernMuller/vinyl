@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Tuple, Optional
-
-DEFAULT_CURRENCY = 'USD'
+from models.purchase_info import PurchaseInfo
 
 class Record(BaseModel):
     # required
@@ -14,30 +13,21 @@ class Record(BaseModel):
 
     # optional
     country: Optional[str] = 'N/A'
-    purchase: Optional[dict] = {}
-
-    # constructor
-    def __init__(self, **data):
-        super().__init__(**data)
-
-        # validate the purchase
-        if self.purchase:
-            if 'price' in self.purchase and 'currency' not in self.purchase:
-                self.purchase['currency'] = DEFAULT_CURRENCY
+    purchase: Optional[PurchaseInfo] = None
 
     @property
     def purchase_date(self) -> Optional[str]:
         if self.purchase:
-            return self.purchase.get('date')
+            return self.purchase.date
         return None
     
     @property
     def purchase_price(self) -> Optional[Tuple[str, float]]:
-        if self.purchase is None or 'price' not in self.purchase:
+        if self.purchase is None or self.purchase.price is None:
             return None
 
-        currency = self.purchase.get('currency')
-        price = self.purchase.get('price')
+        currency = self.purchase.currency
+        price = self.purchase.price
         if price == 0:
             return None
 
@@ -46,7 +36,7 @@ class Record(BaseModel):
     @property
     def purchase_store(self) -> Optional[str]:
         if self.purchase:
-            return self.purchase.get('store')
+            return self.purchase.store
         return None
 
     def __str__(self):
