@@ -1,6 +1,9 @@
 from utils.components import RecordGroup
 from utils.streamlit_util import remove_streamlit_style
+from utils.collection_util import group_and_count, group_and_sum
+from utils.locale_util import format_currency 
 from models.record import Record
+from typing import Optional
 import streamlit as st
 
 RECORDS_LIST_FILE = 'list.json'
@@ -10,6 +13,9 @@ class App:
         self.data = None
         try:
             list_file = open(RECORDS_LIST_FILE, 'r')
+            true = True
+            false = False
+            null = None
             record_list = eval(list_file.read())
             self.data: list[Record] = [Record(**record) for record in record_list]
             list_file.close()
@@ -31,19 +37,36 @@ class App:
                 },
                 ...
             ]
-            ''')
+            ''', language='json')
         except Exception:
             st.error(f'Wrong JSON format in "{RECORDS_LIST_FILE}". Please check the file and try again.')
         finally:
             if not isinstance(self.data, list):
                 st.write("For more information, please check the [documentation](https://github.com/BayernMuller/vinyl/blob/main/README.md).")
                 st.stop()
+
+        self.filter = st.sidebar.expander('filter', expanded=True)
+        self.options = st.sidebar.expander('options', expanded=True)
                 
 
     @staticmethod
     def sort_func(x: Record, tag_list):
         return ''.join([str(getattr(x, tag, '')) for tag in tag_list])
-    
+
+
+    def generate_summary_string(self, group_name: Optional[str] = None):
+        total_count_by_format = group_and_count([record.format for record in self.data])
+        total_count_by_format_as_string = "".join([f"{count} {format}s, " for format, count in total_count_by_format.items()])[:-2]
+
+        if group_name == 'purchase_date':
+            total_price_by_currency = group_and_sum([record.purchase_price for record in self.data if record.purchase_price is not None])
+            total_price_by_currency_as_string = "".join([f"{format_currency(price, currency)}, " for currency, price in total_price_by_currency.items()])[:-2]
+        else:
+            total_price_by_currency_as_string = ''
+
+        return f'Totally {total_count_by_format_as_string}' + (f' and {total_price_by_currency_as_string}' if total_price_by_currency_as_string else '')
+
+
     def run(self):
         st.title('Records')
         summary = st.empty()
@@ -54,22 +77,13 @@ class App:
             'format': {'sort_by': ['artist', 'year'], },
             'year': {'sort_by': ['artist', 'title'], },
             'country': {'sort_by': ['artist', 'year'], },
+            'purchase_date': {'sort_by': ['purchase_date', 'artist', 'year'], },
             'none': {'sort_by': ['artist', 'year'], },
         }
 
         index_format = list(group_by.keys()).index('format')
-
-        with st.sidebar:
-            with st.expander('filter', expanded=True):
-                search = st.text_input('search', key='search')
-
-            with st.expander('options', expanded=True):
-                group_name = st.radio('group by', list(group_by.keys()), index=index_format, key='group_by')
-                group_order = st.radio('order', ['ascending', 'descending'], index=0, key='order', horizontal=True, disabled=group_name == 'none')
-            
-            st.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
-            st.write("Fork this template from [here](https://github.com/BayernMuller/vinyl/fork) and make your own list!")
-
+        search = self.filter.text_input('search', key='search')
+        group_name = self.options.radio('group by', list(group_by.keys()), index=index_format, key='group_by')
         group_info = group_by[group_name]
         sort_by = group_info.get('sort_by')
 
@@ -79,11 +93,18 @@ class App:
                 continue
 
             group = getattr(record, group_name, 'unknown')
+
+            # get the year from purchase_date
+            if group_name == 'purchase_date':
+                group = group[:4] if group else 'N/A'
+
             if group not in table:
                 table[group] = []
             table[group].append(record)
             table[group] = sorted(table[group], key=lambda x: App.sort_func(x, sort_by))
-            
+
+        disable_order = group_name == 'none' or len(table) == 1
+        group_order = self.options.radio('order', ['ascending', 'descending'], index=0, key='order', horizontal=True, disabled=disable_order)
         table = dict(sorted(table.items(), key=lambda x: x[0], reverse=group_order == 'descending'))
 
         if len(table) == 0:
@@ -93,14 +114,13 @@ class App:
                 st.info('No records found')
             st.stop()
 
-
         count = {}
         for group, records in table.items():
             st.write('---')
             if group_name != 'none':
                 st.subheader(group)
 
-            record_widget = RecordGroup()
+            record_widget = RecordGroup(group_name)
             for record in records:
                 record_widget.add_record(record)
                 if record.format not in count:
@@ -111,9 +131,13 @@ class App:
             record_widget.generate()
 
         if search:
-            summary.markdown(f'Found {sum([len(records) for records in table.values()])} records for "{search}"')
+            summary_string = f'Found {sum([len(records) for records in table.values()])} records for "{search}"'
         else:
-            summary.markdown(f'Totally {"".join([f"{count[format]} {format}s, " for format in count])[:-2]}')
+            summary_string = self.generate_summary_string(group_name=group_name)
+        summary.markdown(summary_string)
+
+        st.sidebar.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
+        st.sidebar.write("Fork this template from [here](https://github.com/BayernMuller/vinyl/fork) and make your own list!")
 
 if __name__ == '__main__':
     st.set_page_config(page_title='Records', page_icon=':cd:', layout='wide')
