@@ -84,11 +84,17 @@ class App:
         group_info = group_by[group_name]
         sort_by = group_info.get('sort_by')
 
-        table = {}
-        for record in self.data:
-            if search and search.lower() not in str(record).lower():
-                continue
+        # filter and sort records from list.json by options
+        records = [
+            record 
+            for record in self.data 
+            if search.lower() in str(record).lower()
+        ] if search else self.data
+        records = sorted(records, key=attrgetter(*sort_by))
 
+        # group and sort records by options
+        table = {}
+        for record in records:
             group = getattr(record, group_name, 'unknown')
 
             # get the year from purchase_date
@@ -98,12 +104,12 @@ class App:
             if group not in table:
                 table[group] = []
             table[group].append(record)
-            table[group] = sorted(table[group], key=attrgetter(*sort_by))
 
         disable_order = group_name == 'none' or len(table) == 1
         group_order = self.options.radio('order', ['ascending', 'descending'], index=0, key='order', horizontal=True, disabled=disable_order)
         table = dict(sorted(table.items(), key=lambda x: x[0], reverse=group_order == 'descending'))
 
+        # no records found
         if len(table) == 0:
             if search and len(search) > 0:
                 st.error(f'No records found for "{search}"')
@@ -111,6 +117,7 @@ class App:
                 st.info('No records found')
             st.stop()
 
+        # display records
         count = {}
         for group, records in table.items():
             st.write('---')
@@ -127,12 +134,14 @@ class App:
 
             record_widget.generate()
 
+        # display summary
         if search:
             summary_string = f'Found {sum([len(records) for records in table.values()])} records for "{search}"'
         else:
             summary_string = self.generate_summary_string(group_name=group_name)
         summary.markdown(summary_string)
 
+        # display footer
         st.sidebar.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
         st.sidebar.write("Fork this template from [here](https://github.com/BayernMuller/vinyl/fork) and make your own list!")
 
