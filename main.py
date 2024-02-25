@@ -4,6 +4,7 @@ from utils.collection_util import group_and_count, group_and_sum
 from babel.numbers import format_currency
 from models.record import Record
 from typing import Optional
+from operator import attrgetter
 import streamlit as st
 
 RECORDS_LIST_FILE = 'list.json'
@@ -47,11 +48,6 @@ class App:
 
         self.filter = st.sidebar.expander('filter', expanded=True)
         self.options = st.sidebar.expander('options', expanded=True)
-                
-
-    @staticmethod
-    def sort_func(x: Record, tag_list):
-        return ''.join([str(getattr(x, tag, '')) for tag in tag_list])
 
 
     def generate_summary_string(self, group_name: Optional[str] = None):
@@ -102,7 +98,7 @@ class App:
             if group not in table:
                 table[group] = []
             table[group].append(record)
-            table[group] = sorted(table[group], key=lambda x: App.sort_func(x, sort_by))
+            table[group] = sorted(table[group], key=attrgetter(*sort_by))
 
         disable_order = group_name == 'none' or len(table) == 1
         group_order = self.options.radio('order', ['ascending', 'descending'], index=0, key='order', horizontal=True, disabled=disable_order)
