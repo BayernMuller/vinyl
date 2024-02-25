@@ -58,7 +58,7 @@ class App:
         total_count_by_format = group_and_count([record.format for record in self.data])
         total_count_by_format_as_string = "".join([f"{count} {format}s, " for format, count in total_count_by_format.items()])[:-2]
 
-        if group_name == 'purchase_date':
+        if group_name == 'purchase_date' or group_name == 'purchase_location':
             total_price_by_currency = group_and_sum([record.purchase_price for record in self.data if record.purchase_price is not None])
             total_price_by_currency_as_string = "".join([f"{format_currency(price, currency)}, " for currency, price in total_price_by_currency.items()])[:-2]
         else:
@@ -78,6 +78,7 @@ class App:
             'year': {'sort_by': ['artist', 'title'], },
             'country': {'sort_by': ['artist', 'year'], },
             'purchase_date': {'sort_by': ['purchase_date', 'artist', 'year'], },
+            'purchase_location': {'sort_by': ['purchase_date', 'artist', 'year'], },
             'none': {'sort_by': ['artist', 'year'], },
         }
 
