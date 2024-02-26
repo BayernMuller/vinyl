@@ -64,11 +64,13 @@ class App:
 
 
     def genenerate_group_key(self, record: Record, group_name: str) -> str:
-        group = getattr(record, group_name, 'N/A')
+        group = getattr(record, group_name, None)
+        if group is None:
+            return 'N/A'
 
         # get the year from purchase_date
         if group_name == 'purchase_date':
-            group = group[:4] if group else 'N/A'
+            group = group[:4] if len(group) >= 4 else 'N/A'
 
         # get range from purchase_price
         if group_name == 'purchase_price':
@@ -79,7 +81,7 @@ class App:
                 for digit in range(1, max_digit+1) 
                 for x in range(10**digit, 10**(digit+1), 10**digit) 
             ] + [ 10**max_digit ]
-
+            
             currency, price = group
             if price < ranges[0]:
                 group = f'~ {format_currency(10, currency)}'
@@ -90,7 +92,7 @@ class App:
                         break
                 else:
                     group = f'{format_currency(ranges[-1], currency)} ~'
-
+    
         return group
 
 
