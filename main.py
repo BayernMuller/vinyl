@@ -1,9 +1,10 @@
 from utils.components import RecordGroup
 from utils.streamlit_util import remove_streamlit_style
 from utils.collection_util import group_and_count, group_and_sum
-from utils.locale_util import format_currency 
+from babel.numbers import format_currency
 from models.record import Record
 from typing import Optional
+from operator import attrgetter
 import streamlit as st
 
 RECORDS_LIST_FILE = 'list.json'
@@ -47,24 +48,50 @@ class App:
 
         self.filter = st.sidebar.expander('filter', expanded=True)
         self.options = st.sidebar.expander('options', expanded=True)
-                
-
-    @staticmethod
-    def sort_func(x: Record, tag_list):
-        return ''.join([str(getattr(x, tag, '')) for tag in tag_list])
 
 
     def generate_summary_string(self, group_name: Optional[str] = None):
         total_count_by_format = group_and_count([record.format for record in self.data])
         total_count_by_format_as_string = "".join([f"{count} {format}s, " for format, count in total_count_by_format.items()])[:-2]
 
-        if group_name == 'purchase_date':
+        if group_name in ['purchase_price', 'purchase_date', 'purchase_location']:
             total_price_by_currency = group_and_sum([record.purchase_price for record in self.data if record.purchase_price is not None])
             total_price_by_currency_as_string = "".join([f"{format_currency(price, currency)}, " for currency, price in total_price_by_currency.items()])[:-2]
         else:
             total_price_by_currency_as_string = ''
 
         return f'Totally {total_count_by_format_as_string}' + (f' and {total_price_by_currency_as_string}' if total_price_by_currency_as_string else '')
+
+
+    def genenerate_group_key(self, record: Record, group_name: str) -> str:
+        group = getattr(record, group_name, 'N/A')
+
+        # get the year from purchase_date
+        if group_name == 'purchase_date':
+            group = group[:4] if group else 'N/A'
+
+        # get range from purchase_price
+        if group_name == 'purchase_price':
+            # 10, 20, ..., 100, 200, ..., 1000, 2000, ..., 10000, 20000, ..., 100000, 200000, ..., 1000000
+            max_digit = 6 # 1,000,000
+            ranges = [ 
+                x 
+                for digit in range(1, max_digit+1) 
+                for x in range(10**digit, 10**(digit+1), 10**digit) 
+            ] + [ 10**max_digit ]
+
+            currency, price = group
+            if price < ranges[0]:
+                group = f'~ {format_currency(10, currency)}'
+            else:
+                for i in range(len(ranges) - 1):
+                    if price < ranges[i+1]:
+                        group = f'{format_currency(ranges[i], currency)} ~'
+                        break
+                else:
+                    group = f'{format_currency(ranges[-1], currency)} ~'
+
+        return group
 
 
     def run(self):
@@ -77,7 +104,9 @@ class App:
             'format': {'sort_by': ['artist', 'year'], },
             'year': {'sort_by': ['artist', 'title'], },
             'country': {'sort_by': ['artist', 'year'], },
+            'purchase_price': {'sort_by': ['purchase_price', 'purchase_date'], },
             'purchase_date': {'sort_by': ['purchase_date', 'artist', 'year'], },
+            'purchase_location': {'sort_by': ['purchase_date', 'artist', 'year'], },
             'none': {'sort_by': ['artist', 'year'], },
         }
 
@@ -87,26 +116,33 @@ class App:
         group_info = group_by[group_name]
         sort_by = group_info.get('sort_by')
 
+        # filter and sort records from list.json by options
+        records = [
+            record 
+            for record in self.data 
+            if search.lower() in str(record).lower()
+        ] if search else self.data
+        records = sorted(records, key=attrgetter(*sort_by))
+
+        # group by options
         table = {}
-        for record in self.data:
-            if search and search.lower() not in str(record).lower():
-                continue
-
-            group = getattr(record, group_name, 'unknown')
-
-            # get the year from purchase_date
-            if group_name == 'purchase_date':
-                group = group[:4] if group else 'N/A'
-
+        for record in records:
+            group = self.genenerate_group_key(record, group_name)
             if group not in table:
                 table[group] = []
             table[group].append(record)
-            table[group] = sorted(table[group], key=lambda x: App.sort_func(x, sort_by))
 
+        # sort keys by options
         disable_order = group_name == 'none' or len(table) == 1
         group_order = self.options.radio('order', ['ascending', 'descending'], index=0, key='order', horizontal=True, disabled=disable_order)
-        table = dict(sorted(table.items(), key=lambda x: x[0], reverse=group_order == 'descending'))
+        table = dict(sorted(
+            table.items(), 
+            # natural sort (https://stackoverflow.com/a/31432964) for purchase_price
+            key=lambda x: '{0:0>12}'.format(x[0]).lower() if group_name == 'purchase_price' else x[0],
+            reverse=group_order == 'descending',
+        ))
 
+        # no records found
         if len(table) == 0:
             if search and len(search) > 0:
                 st.error(f'No records found for "{search}"')
@@ -114,6 +150,7 @@ class App:
                 st.info('No records found')
             st.stop()
 
+        # display records
         count = {}
         for group, records in table.items():
             st.write('---')
@@ -130,12 +167,14 @@ class App:
 
             record_widget.generate()
 
+        # display summary
         if search:
             summary_string = f'Found {sum([len(records) for records in table.values()])} records for "{search}"'
         else:
             summary_string = self.generate_summary_string(group_name=group_name)
         summary.markdown(summary_string)
 
+        # display footer
         st.sidebar.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
         st.sidebar.write("Fork this template from [here](https://github.com/BayernMuller/vinyl/fork) and make your own list!")
 
