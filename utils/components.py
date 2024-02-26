@@ -9,7 +9,7 @@ class RecordGroup:
     def __init__(self, group_name: Optional[str] = None):
         self.__html = '<div>'
         self.__length = 0
-        self.__group_name = group_name
+        self.__show_purchase_info = group_name in ['purchase_price', 'purchase_date', 'purchase_location']
 
     def add_record(self, record: Record):
         self.__html += self.__create_record(record)
@@ -54,7 +54,7 @@ class RecordGroup:
         return html
 
     def __create_purchase_info(self, record: Record) -> str:
-        if not record.purchase or self.__group_name != 'purchase_date':
+        if not record.purchase or not self.__show_purchase_info:
             return '<div></div>'
 
         price_html = f"""<div style="color: gray; font-size: 12px;">
