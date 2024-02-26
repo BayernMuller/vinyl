@@ -1,5 +1,5 @@
 from utils.components import RecordGroup
-from utils.streamlit_util import remove_streamlit_style
+from utils.streamlit_util import remove_streamlit_style, get_query_params_from_url, set_query_params_to_url
 from utils.collection_util import group_and_count, group_and_sum
 from babel.numbers import format_currency
 from models.record import Record
@@ -94,7 +94,12 @@ class App:
                     group = f'{format_currency(ranges[-1], currency)} ~'
     
         return group
-
+    
+    def get_cached_params(self):
+        return dict(
+            search=st.session_state.get('search'),
+            group=st.session_state.get('group')
+        )
 
     def run(self):
         st.title('Records')
@@ -112,12 +117,25 @@ class App:
             'none': {'sort_by': ['artist', 'year'], },
         }
 
-        index_format = list(group_by.keys()).index('format')
-        search = self.filter.text_input('search', key='search')
-        group_name = self.options.radio('group by', list(group_by.keys()), index=index_format, key='group_by')
+
+        param = get_query_params_from_url()
+        search_param = param.get('search', '')
+        group_param = param.get('group', 'format')
+
+        search = self.filter.text_input('search', 
+                                        key='search', 
+                                        value=search_param, 
+                                        on_change=lambda: set_query_params_to_url(self.get_cached_params()))
+        
+        group_name = self.options.radio('group by',
+                                        options=list(group_by.keys()),
+                                        index=list(group_by.keys()).index(group_param),
+                                        key='group',
+                                        on_change=lambda: set_query_params_to_url(self.get_cached_params()))
+        
         group_info = group_by[group_name]
         sort_by = group_info.get('sort_by')
-
+    
         # filter and sort records from list.json by options
         records = [
             record 
@@ -150,7 +168,6 @@ class App:
                 st.error(f'No records found for "{search}"')
             else:
                 st.info('No records found')
-            st.stop()
 
         # display records
         count = {}
@@ -176,9 +193,16 @@ class App:
             summary_string = self.generate_summary_string(group_name=group_name)
         summary.markdown(summary_string)
 
+        # clear filter and options
+        st.sidebar.button('clear filter and options',
+                        disabled=(search == '' and group_name == 'format'),
+                        on_click=lambda: set_query_params_to_url({}))
+            
         # display footer
+        st.sidebar.divider()
         st.sidebar.write("Developed by [@BayernMuller](https://github.com/bayernmuller)")
         st.sidebar.write("Fork this template from [here](https://github.com/BayernMuller/vinyl/fork) and make your own list!")
+
 
 if __name__ == '__main__':
     st.set_page_config(page_title='Records', page_icon=':cd:', layout='wide')
