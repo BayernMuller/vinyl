@@ -518,5 +518,13 @@
         "year": 2022,
         "genre": "Dance",
         "format": "LP"
+    },
+    {
+        "cover": "https://is3-ssl.mzstatic.com/image/thumb/Music115/v4/02/6a/99/026a998e-835f-81a9-d5e5-f0fbf091caf7/cover-C_JAMM_NEW.jpg/592x592bb.webp",
+        "artist": "C Jamm",
+        "title": "킁",
+        "year": 2019,
+        "genre": "Korean Hip-Hop",
+        "format": "LP"
     }
 ]
