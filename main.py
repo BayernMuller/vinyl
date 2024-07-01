@@ -6,22 +6,20 @@ from models.record import Record
 from typing import Optional
 from operator import attrgetter
 import streamlit as st
-
-RECORDS_LIST_FILE = 'list.json'
+import requests
 
 class App:
-    def __init__(self):
+    RECORDS_LIST_FILE = 'list.json'
+
+    def __init__(self, user_name: Optional[str] = None, repository_name: Optional[str] = None, branch_name: Optional[str] = None):
         self.data = None
+        self.user_name = user_name
+        self.repository_name = repository_name
+        self.branch_name = branch_name
         try:
-            list_file = open(RECORDS_LIST_FILE, 'r')
-            true = True
-            false = False
-            null = None
-            record_list = eval(list_file.read())
-            self.data: list[Record] = [Record(**record) for record in record_list]
-            list_file.close()
-        except FileNotFoundError:
-            st.error(f'File "{RECORDS_LIST_FILE}" not found')
+            self.data = self._get_records_list()
+        except FileNotFoundError or requests.exceptions.RequestException:
+            st.error(f'Could not load records from {self.RECORDS_LIST_FILE}')
             st.write('')
             st.write("Did you fork this template just now? If so, you need to upload your list file first.")
             st.code('''
@@ -39,8 +37,8 @@ class App:
                 ...
             ]
             ''', language='json')
-        except Exception:
-            st.error(f'Wrong JSON format in "{RECORDS_LIST_FILE}". Please check the file and try again.')
+        except Exception as e:
+            st.error(f'Failed to load records: {e}')
         finally:
             if not isinstance(self.data, list):
                 st.write("For more information, please check the [documentation](https://github.com/BayernMuller/vinyl/blob/main/README.md).")
@@ -49,6 +47,24 @@ class App:
         self.filter = st.sidebar.expander('filter', expanded=True)
         self.options = st.sidebar.expander('options', expanded=True)
 
+    def _get_records_list(self) -> list[Record]:
+        dict_list = None
+        if self.user_name and self.repository_name and self.branch_name:
+            # if user_name and branch_name are provided, get records list from github
+            # this makes streamlit hub refresh list without restarting the app
+            url = "https://raw.githubusercontent.com"
+            url += f"/{self.user_name}/{self.repository_name}/{self.branch_name}/{App.RECORDS_LIST_FILE}"
+            dict_list = requests.get(url).json()
+        else:
+            # get records list from local file
+            true = True
+            false = False
+            null = None
+            list_file = open(App.RECORDS_LIST_FILE, 'r')
+            dict_list = eval(list_file.read())
+            list_file.close()
+
+        return [Record(**record) for record in dict_list]
 
     def generate_summary_string(self, group_name: Optional[str] = None):
         total_count_by_format = group_and_count([record.format for record in self.data])
