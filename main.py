@@ -223,5 +223,9 @@ class App:
 if __name__ == '__main__':
     st.set_page_config(page_title='Records', page_icon=':cd:', layout='wide')
     remove_streamlit_style()
-    app = App()
+    app = App(
+        user_name='BayernMuller',
+        repository_name='vinyl',
+        branch_name='jayden/records'
+    )
     app.run()
