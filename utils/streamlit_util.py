@@ -17,4 +17,4 @@ def get_query_params_from_url():
 def set_query_params_to_url(params: dict[str, str]) -> None:
     print(params)
     for k, v in params.items():
-        st.query_params.items[k] = v
+        st.query_params[k] = v
