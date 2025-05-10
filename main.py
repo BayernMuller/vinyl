@@ -39,6 +39,7 @@ class App:
             ''', language='json')
         except Exception as e:
             st.error(f'Failed to load records: {e}')
+            st.code(traceback.format_exc())
         finally:
             if not isinstance(self.data, list):
                 st.write("For more information, please check the [documentation](https://github.com/BayernMuller/vinyl/blob/main/README.md).")
