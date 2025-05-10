@@ -7,7 +7,7 @@ from typing import Optional
 from operator import attrgetter
 import streamlit as st
 import requests
-
+import traceback
 class App:
     RECORDS_LIST_FILE = 'list.json'
 
